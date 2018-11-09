@@ -103,7 +103,7 @@ public abstract class AbstractValue<T> implements IValue<T> {
       T clientValue = get();
       if (!clientValue.equals(serverValue)) {
         Log.error(Lang.NETWORK_BAD_CONFIG.get(section, keyname, serverValue));
-        Minecraft.getMinecraft().player.connection.getNetworkManager().closeChannel(Lang.NETWORK_BAD_CONFIG.toChatServer(section, keyname, serverValue));
+        Minecraft.getMinecraft().player.connection.getNetworkManager().closeChannel(Lang.NETWORK_BAD_CONFIG.toChat(section, keyname, serverValue));
       }
     }
   }
