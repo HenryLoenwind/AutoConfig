@@ -1,6 +1,7 @@
 package info.loenwind.autoconfig.gui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import info.loenwind.autoconfig.factory.IRootFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -45,6 +47,12 @@ public abstract class ConfigFactory implements IModGuiFactory {
   protected abstract String getTitle2();
 
   protected abstract Map<String, Configuration> getConfigurations();
+
+  protected Map<String, Configuration> singleConfig(IRootFactory rootFactory) {
+    Map<String, Configuration> result = new HashMap<>();
+    result.put("", rootFactory.getConfig());
+    return result;
+  }
 
   protected List<IConfigElement> getConfigElements(GuiScreen parent) {
     List<IConfigElement> result = new ArrayList<>();
