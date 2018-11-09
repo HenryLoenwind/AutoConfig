@@ -1,0 +1,221 @@
+package info.loenwind.autoconfig.factory;
+
+import java.nio.charset.Charset;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import info.loenwind.autoconfig.util.NullHelper;
+import io.netty.buffer.ByteBuf;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+
+public class ByteBufAdapters {
+
+  public static <P> IByteBufAdapter<P> register(IByteBufAdapter<P> adapter) {
+    ByteBufAdapterRegistry.register(adapter);
+    return adapter;
+  }
+
+  public static final IByteBufAdapter<Integer> INTEGER = register(new IByteBufAdapter<Integer>() {
+
+    @Override
+    public void saveValue(ByteBuf buf, @Nonnull Integer value) {
+      buf.writeInt(value);
+    }
+
+    @Override
+    public Integer readValue(ByteBuf buf) {
+      return buf.readInt();
+    }
+
+    @Override
+    public String getName() {
+      return "I";
+    }
+
+  });
+
+  public static final IByteBufAdapter<Double> DOUBLE = register(new IByteBufAdapter<Double>() {
+
+    @Override
+    public void saveValue(ByteBuf buf, @Nonnull Double value) {
+      buf.writeDouble(value);
+    }
+
+    @Override
+    public Double readValue(ByteBuf buf) {
+      return buf.readDouble();
+    }
+
+    @Override
+    public String getName() {
+      return "D";
+    }
+
+  });
+
+  public static final IByteBufAdapter<Float> FLOAT = register(new IByteBufAdapter<Float>() {
+
+    @Override
+    public void saveValue(ByteBuf buf, @Nonnull Float value) {
+      buf.writeFloat(value);
+    }
+
+    @Override
+    public Float readValue(ByteBuf buf) {
+      return buf.readFloat();
+    }
+
+    @Override
+    public String getName() {
+      return "F";
+    }
+
+  });
+
+  public static final IByteBufAdapter<Boolean> BOOLEAN = register(new IByteBufAdapter<Boolean>() {
+
+    @Override
+    public void saveValue(ByteBuf buf, @Nonnull Boolean value) {
+      buf.writeBoolean(value);
+    }
+
+    @Override
+    public Boolean readValue(ByteBuf buf) {
+      return buf.readBoolean();
+    }
+
+    @Override
+    public String getName() {
+      return "B";
+    }
+
+  });
+
+  public static final IByteBufAdapter<String> STRING = register(new IByteBufAdapter<String>() {
+
+    @Override
+    public void saveValue(ByteBuf buf, @Nonnull String value) {
+      final byte[] vbytes = value.getBytes(Charset.forName("UTF-8"));
+      if (vbytes.length > 0x7FFF) {
+        throw new RuntimeException("String too long");
+      }
+      buf.writeShort(vbytes.length);
+      buf.writeBytes(vbytes);
+    }
+
+    @Override
+    public String readValue(ByteBuf buf) {
+      final int len = buf.readShort();
+      final byte[] bytes = new byte[len];
+      buf.readBytes(bytes, 0, len);
+      return new String(bytes, Charset.forName("UTF-8"));
+    }
+
+    @Override
+    public String getName() {
+      return "S";
+    }
+
+  });
+
+  public static final IByteBufAdapter<String> STRING127 = register(new IByteBufAdapter<String>() {
+
+    @Override
+    public void saveValue(ByteBuf buf, @Nonnull String value) {
+      final byte[] vbytes = value.getBytes(Charset.forName("UTF-8"));
+      if (vbytes.length > 0x7F) {
+        throw new RuntimeException("String too long");
+      }
+      buf.writeByte(vbytes.length); // Important: Keep in sync with ENDMARKER
+      buf.writeBytes(vbytes);
+    }
+
+    @Override
+    public String readValue(ByteBuf buf) {
+      final int len = buf.readByte();
+      final byte[] bytes = new byte[len];
+      buf.readBytes(bytes, 0, len);
+      return new String(bytes, Charset.forName("UTF-8"));
+    }
+
+    @Override
+    public String getName() {
+      return "7";
+    }
+
+  });
+
+  public static final IByteBufAdapter<Boolean> ENDMARKER = register(new IByteBufAdapter<Boolean>() {
+
+    @Override
+    public void saveValue(ByteBuf buf, @Nonnull Boolean value) {
+      buf.writeByte(0);
+    }
+
+    @Override
+    public @Nullable Boolean readValue(ByteBuf buf) {
+      buf.markReaderIndex();
+      final int val = buf.readByte();
+      if (val == 0) {
+        return true;
+      } else {
+        buf.resetReaderIndex();
+        return null;
+      }
+    }
+
+    @Override
+    public String getName() {
+      return "X";
+    }
+
+  });
+
+  public static final IByteBufAdapter<Boolean> NONE = register(new IByteBufAdapter<Boolean>() {
+
+    @Override
+    public void saveValue(ByteBuf buf, @Nonnull Boolean value) {
+    }
+
+    @Override
+    public @Nullable Boolean readValue(ByteBuf buf) {
+      return null;
+    }
+
+    @Override
+    public String getName() {
+      return "N";
+    }
+
+  });
+
+  public static final IByteBufAdapter<Fluid> FLUID = register(new IByteBufAdapter<Fluid>() {
+
+    @Override
+    public void saveValue(ByteBuf buf, @Nonnull Fluid value) {
+      final byte[] vbytes = NullHelper.first(FluidRegistry.getFluidName(value), "").getBytes(Charset.forName("UTF-8"));
+      if (vbytes.length > 0x7F) {
+        throw new RuntimeException("Fluid name too long");
+      }
+      buf.writeByte(vbytes.length);
+      buf.writeBytes(vbytes);
+    }
+
+    @Override
+    public @Nullable Fluid readValue(ByteBuf buf) {
+      final int len = buf.readByte();
+      final byte[] bytes = new byte[len];
+      buf.readBytes(bytes, 0, len);
+      return FluidRegistry.getFluid(new String(bytes, Charset.forName("UTF-8")));
+    }
+
+    @Override
+    public String getName() {
+      return "L";
+    }
+
+  });
+
+}
