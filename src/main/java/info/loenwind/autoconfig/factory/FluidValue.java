@@ -27,6 +27,7 @@ class FluidValue extends AbstractValue<Fluid> {
   @Nonnull
   @Override
   public Fluid get() {
+    final String valueInConfig = getString(); // make sure the config value is registered with the config object
     if (!Loader.instance().hasReachedState(LoaderState.INITIALIZATION)) {
       return defaultValue;
     }
@@ -38,7 +39,7 @@ class FluidValue extends AbstractValue<Fluid> {
       if (serverConfig != null && serverConfig.containsKey(keyname)) {
         value = (Fluid) serverConfig.get(keyname);
       } else {
-        value = FluidRegistry.getFluid(getString());
+        value = FluidRegistry.getFluid(valueInConfig);
         if (!owner.isInInit() && owner.getConfig().hasChanged()) {
           owner.getConfig().save();
         }
