@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-class PacketConfigSync implements IMessage {
+public class PacketConfigSync implements IMessage {
 
   protected @Nullable IValueFactory factory;
   protected @Nullable String modid, section;
