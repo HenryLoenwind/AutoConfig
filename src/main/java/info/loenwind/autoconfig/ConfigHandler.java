@@ -19,7 +19,7 @@ public class ConfigHandler {
   protected final File configDirectory;
   protected final Configuration config;
 
-  private IRootFactory factory;
+  protected final IRootFactory factory;
 
   public ConfigHandler(FMLPreInitializationEvent event, IRootFactory factory) {
     this(event, factory, null);
