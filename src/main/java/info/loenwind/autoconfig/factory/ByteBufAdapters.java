@@ -1,6 +1,8 @@
 package info.loenwind.autoconfig.factory;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,6 +34,33 @@ public class ByteBufAdapters {
     @Override
     public String getName() {
       return "I";
+    }
+
+  });
+
+  public static final IByteBufAdapter<int[]> INTEGERARRAY = register(new IByteBufAdapter<int[]>() {
+
+    @Override
+    public void saveValue(ByteBuf buf, @Nonnull int[] value) {
+      buf.writeInt(value.length);
+      for (int i : value) {
+        buf.writeInt(i);
+      }
+    }
+
+    @Override
+    public int[] readValue(ByteBuf buf) {
+      int len = buf.readInt();
+      int[] result = new int[len];
+      for (int i = 0; i < result.length; i++) {
+        result[i] = buf.readInt();
+      }
+      return result;
+    }
+
+    @Override
+    public String getName() {
+      return "i[]";
     }
 
   });
@@ -116,6 +145,33 @@ public class ByteBufAdapters {
     @Override
     public String getName() {
       return "S";
+    }
+
+  });
+
+  public static final IByteBufAdapter<List<String>> STRINGLIST = register(new IByteBufAdapter<List<String>>() {
+
+    @Override
+    public void saveValue(ByteBuf buf, @Nonnull List<String> value) {
+      buf.writeInt(value.size());
+      for (String string : value) {
+        STRING.saveValue(buf, NullHelper.first(string, ""));
+      }
+    }
+
+    @Override
+    public List<String> readValue(ByteBuf buf) {
+      final int len = buf.readInt();
+      final List<String> result = new ArrayList<>(len);
+      for (int i = 0; i < len; i++) {
+        result.add(STRING.readValue(buf));
+      }
+      return result;
+    }
+
+    @Override
+    public String getName() {
+      return "S()";
     }
 
   });

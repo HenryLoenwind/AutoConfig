@@ -51,6 +51,11 @@ public class SlaveFactory implements IValueFactory {
   }
 
   @Override
+  public IValue<int[]> make(String keyname, int[] defaultValue, String text) {
+    return new IntListValue(this, section, keyname, defaultValue, text).preload();
+  }
+
+  @Override
   public @Nonnull IValue<Double> make(@Nonnull String keyname, double defaultValue, @Nonnull String text) {
     return new DoubleValue(this, section, keyname, defaultValue, text).preload();
   }
@@ -63,6 +68,11 @@ public class SlaveFactory implements IValueFactory {
   @Override
   public @Nonnull IValue<String> make(@Nonnull String keyname, @Nonnull String defaultValue, @Nonnull String text) {
     return new StringValue(this, section, keyname, defaultValue, text).preload();
+  }
+
+  @Override
+  public @Nonnull IValue<List<String>> make(@Nonnull String keyname, @Nonnull List<String> defaultValue, @Nonnull String text) {
+    return new StringListValue(this, section, keyname, defaultValue, text).preload();
   }
 
   @Override
