@@ -18,7 +18,7 @@ class LimitedStringValue extends AbstractValue<String> {
     Property prop = owner.getConfig().get(section, keyname, defaultValue);
     prop.setValidValues(limit);
     prop.setLanguageKey(keyname);
-    prop.setComment(getText() + " [default: " + defaultValue + "]");
+    prop.setComment(getText() + " [default: " + defaultValue + ", possible values: " + String.join(", ", limit) + "]");
     prop.setRequiresMcRestart(isStartup);
     return prop.getString();
   }
