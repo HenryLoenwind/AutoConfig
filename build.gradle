@@ -184,12 +184,17 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
 }
 
 task rmKeyStore(type: Delete) {
-  delete 'ecstore.jks'
+  delete 'autosavestore.jks'
+}
+
+task rmKeyStorePre(type: Delete) {
+  delete 'autosavestore.jks'
 }
 
 build.dependsOn rmKeyStore
 rmKeyStore.dependsOn signJar
 signJar.dependsOn mkKeyStore
+mkKeyStore.dependsOn rmKeyStorePre
 
 tasks.curseforge.enabled = !dev && project.hasProperty('curseforge_key')
     
