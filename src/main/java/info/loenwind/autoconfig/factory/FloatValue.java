@@ -1,5 +1,7 @@
 package info.loenwind.autoconfig.factory;
 
+import java.util.Random;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.util.math.MathHelper;
@@ -27,6 +29,16 @@ class FloatValue extends AbstractValue<Float> {
   @Override
   protected IByteBufAdapter<Float> getDataType() {
     return ByteBufAdapters.FLOAT;
+  }
+
+  @Override
+  public int getChance(Random rand) {
+    float chance = get();
+    int result = (int) chance;
+    if ((result + rand.nextFloat()) < chance) {
+      result++;
+    }
+    return result;
   }
 
 }

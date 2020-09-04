@@ -1,5 +1,7 @@
 package info.loenwind.autoconfig.factory;
 
+import java.util.Random;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.util.math.MathHelper;
@@ -26,6 +28,16 @@ class IntValue extends AbstractValue<Integer> {
   @Override
   protected IByteBufAdapter<Integer> getDataType() {
     return ByteBufAdapters.INTEGER;
+  }
+
+  @Override
+  public int getChance(Random rand) {
+    int chance = get();
+    int result = (int) (chance / 100f);
+    if (rand.nextInt(100) < chance % 100) {
+      result++;
+    }
+    return result;
   }
 
 }

@@ -1,5 +1,7 @@
 package info.loenwind.autoconfig.factory;
 
+import java.util.Random;
+
 import javax.annotation.Nullable;
 
 import net.minecraftforge.common.config.Property;
@@ -22,6 +24,11 @@ class BooleanValue extends AbstractValue<Boolean> {
   @Override
   protected IByteBufAdapter<Boolean> getDataType() {
     return ByteBufAdapters.BOOLEAN;
+  }
+
+  @Override
+  public int getChance(Random rand) {
+    return get() ? 1 : 0;
   }
 
 }
