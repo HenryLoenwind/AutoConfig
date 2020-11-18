@@ -1,8 +1,9 @@
 package info.loenwind.autoconfig.factory;
 
+import info.loenwind.autoconfig.util.ConfigProperty;
+
 import javax.annotation.Nullable;
 
-import net.minecraftforge.common.config.Property;
 
 class StringValue extends AbstractValue<String> {
 
@@ -12,7 +13,7 @@ class StringValue extends AbstractValue<String> {
 
   @Override
   protected @Nullable String makeValue() {
-    Property prop = owner.getConfig().get(section, keyname, defaultValue);
+    ConfigProperty prop = owner.getConfig().get(section, keyname, defaultValue);
     prop.setLanguageKey(keyname);
     prop.setValidationPattern(null);
     prop.setComment(getText() + " [default: " + defaultValue + "]");

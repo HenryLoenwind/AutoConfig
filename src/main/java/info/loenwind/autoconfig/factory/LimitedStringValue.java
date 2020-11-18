@@ -1,8 +1,9 @@
 package info.loenwind.autoconfig.factory;
 
+import info.loenwind.autoconfig.util.ConfigProperty;
+
 import javax.annotation.Nullable;
 
-import net.minecraftforge.common.config.Property;
 
 class LimitedStringValue extends AbstractValue<String> {
 
@@ -15,7 +16,7 @@ class LimitedStringValue extends AbstractValue<String> {
 
   @Override
   protected @Nullable String makeValue() {
-    Property prop = owner.getConfig().get(section, keyname, defaultValue);
+    ConfigProperty prop = owner.getConfig().get(section, keyname, defaultValue);
     prop.setValidValues(limit);
     prop.setLanguageKey(keyname);
     prop.setComment(getText() + " [default: " + defaultValue + ", possible values: " + String.join(", ", limit) + "]");

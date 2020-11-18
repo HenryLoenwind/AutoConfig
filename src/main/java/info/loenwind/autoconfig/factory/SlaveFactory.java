@@ -9,8 +9,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fluids.Fluid;
+import net.minecraft.fluid.Fluid;
 
 public class SlaveFactory implements IValueFactory {
 

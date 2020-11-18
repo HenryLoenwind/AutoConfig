@@ -9,10 +9,7 @@ import info.loenwind.autoconfig.factory.IRootFactory;
 import info.loenwind.autoconfig.util.Log;
 import info.loenwind.autoconfig.util.NullHelper;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ConfigHandler {
 

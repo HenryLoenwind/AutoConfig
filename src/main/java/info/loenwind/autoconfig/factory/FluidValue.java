@@ -5,12 +5,10 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import info.loenwind.autoconfig.util.ConfigProperty;
 import info.loenwind.autoconfig.util.NullHelper;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
+import net.minecraft.fluid.Fluid;
+import net.minecraftforge.fml.loading.FMLLoader;
 
 class FluidValue extends AbstractValue<Fluid> {
 
@@ -28,7 +26,7 @@ class FluidValue extends AbstractValue<Fluid> {
   @Override
   public Fluid get() {
     final String valueInConfig = getString(); // make sure the config value is registered with the config object
-    if (!Loader.instance().hasReachedState(LoaderState.INITIALIZATION)) {
+    if (!FMLLoader.hasReachedState(LoaderState.INITIALIZATION)) {
       return defaultValue;
     }
     if (defaultFluid == null) {
@@ -50,7 +48,7 @@ class FluidValue extends AbstractValue<Fluid> {
   }
 
   private @Nullable String getString() {
-    Property prop = owner.getConfig().get(section, keyname, defaultValueName);
+    ConfigProperty prop = owner.getConfig().get(section, keyname, defaultValueName);
     prop.setLanguageKey(keyname);
     prop.setValidationPattern(null);
     prop.setComment(getText() + " [default: " + defaultValueName + "]");

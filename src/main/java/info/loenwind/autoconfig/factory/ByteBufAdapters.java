@@ -9,8 +9,10 @@ import javax.annotation.Nullable;
 
 import info.loenwind.autoconfig.util.NullHelper;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.fluid.Fluid;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class ByteBufAdapters {
 
@@ -251,7 +253,7 @@ public class ByteBufAdapters {
 
     @Override
     public void saveValue(ByteBuf buf, @Nonnull Fluid value) {
-      final byte[] vbytes = NullHelper.first(FluidRegistry.getFluidName(value), "").getBytes(Charset.forName("UTF-8"));
+      final byte[] vbytes = NullHelper.first(ForgeRegistries.FLUIDS.getKey(value), "").getBytes(Charset.forName("UTF-8"));
       if (vbytes.length > 0x7F) {
         throw new RuntimeException("Fluid name too long");
       }
