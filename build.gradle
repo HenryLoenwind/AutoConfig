@@ -171,6 +171,15 @@ publishing {
             } else {
                 maven { url maven2_url }
             }
+        }
+        if (project.hasProperty('use_hypherion') && project.use_hypherion) {
+            maven {
+                url hypherion_mavenURL
+                credentials {
+                    username System.getenv('MAVEN_USER')
+                    password System.getenv('MAVEN_PASS')
+                }
+            }
         } else {
             mavenLocal()
         }
