@@ -10,8 +10,9 @@ import javax.annotation.Nullable;
 import info.loenwind.autoconfig.util.NullHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.fluid.Fluid;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class ByteBufAdapters {
@@ -253,7 +254,7 @@ public class ByteBufAdapters {
 
     @Override
     public void saveValue(ByteBuf buf, @Nonnull Fluid value) {
-      final byte[] vbytes = NullHelper.first(ForgeRegistries.FLUIDS.getKey(value), "").getBytes(Charset.forName("UTF-8"));
+      final byte[] vbytes = NullHelper.first(value.getRegistryName().toString(), "").getBytes(Charset.forName("UTF-8"));
       if (vbytes.length > 0x7F) {
         throw new RuntimeException("Fluid name too long");
       }
@@ -266,7 +267,8 @@ public class ByteBufAdapters {
       final int len = buf.readByte();
       final byte[] bytes = new byte[len];
       buf.readBytes(bytes, 0, len);
-      return FluidRegistry.getFluid(new String(bytes, Charset.forName("UTF-8")));
+      return ForgeRegistries.FLUIDS.getValue(ResourceLocation.tryCreate(new String(bytes, Charset.forName("UTF-8"))));
+      //return FluidRegistry.getFluid(new String(bytes, Charset.forName("UTF-8")));
     }
 
     @Override

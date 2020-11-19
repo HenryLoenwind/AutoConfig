@@ -8,11 +8,18 @@ import javax.annotation.Nullable;
 import info.loenwind.autoconfig.util.ConfigProperty;
 import info.loenwind.autoconfig.util.NullHelper;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModLoader;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.ModLoadingStage;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.registries.ForgeRegistries;
 
 class FluidValue extends AbstractValue<Fluid> {
 
-  private final static Fluid defaultFluidPlaceholder = new Fluid("", null, null);
+  private final static Fluid defaultFluidPlaceholder = Fluids.EMPTY;
 
   private final String defaultValueName;
   private @Nullable Fluid defaultFluid = null;
@@ -26,18 +33,18 @@ class FluidValue extends AbstractValue<Fluid> {
   @Override
   public Fluid get() {
     final String valueInConfig = getString(); // make sure the config value is registered with the config object
-    if (!FMLLoader.hasReachedState(LoaderState.INITIALIZATION)) {
+    if (ModLoadingContext.get().getActiveContainer().getCurrentState() != ModLoadingStage.CONSTRUCT) {
       return defaultValue;
     }
     if (defaultFluid == null) {
-      defaultFluid = FluidRegistry.getFluid(defaultValueName);
+      defaultFluid = ForgeRegistries.FLUIDS.getValue(ResourceLocation.tryCreate(defaultValueName));
     }
     if (value == null || valueGeneration != owner.getGeneration()) {
       final Map<String, Object> serverConfig = owner.getServerConfig();
       if (serverConfig != null && serverConfig.containsKey(keyname)) {
         value = (Fluid) serverConfig.get(keyname);
       } else {
-        value = FluidRegistry.getFluid(valueInConfig);
+        value = ForgeRegistries.FLUIDS.getValue(ResourceLocation.tryCreate(valueInConfig));
         if (!owner.isInInit() && owner.getConfig().hasChanged()) {
           owner.getConfig().save();
         }

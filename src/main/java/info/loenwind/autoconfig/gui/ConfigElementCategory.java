@@ -6,17 +6,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import net.minecraftforge.common.config.ConfigCategory;
-import net.minecraftforge.common.config.ConfigElement;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.client.config.ConfigGuiType;
-import net.minecraftforge.fml.client.config.GuiConfigEntries.IConfigEntry;
-import net.minecraftforge.fml.client.config.GuiEditArrayEntries.IArrayEntry;
-import net.minecraftforge.fml.client.config.IConfigElement;
-
-/**
- ** Forge's {@link ConfigElement} is written in a way to prevent sub-classing, so we had to copy it.
- **/
+//TODO Config GUI
+/*
 public class ConfigElementCategory implements IConfigElement {
   private ConfigCategory category;
 
@@ -185,4 +176,4 @@ public class ConfigElementCategory implements IConfigElement {
     return null;
   }
 
-}
+}*/
