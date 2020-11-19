@@ -4,12 +4,12 @@ import javax.annotation.Nullable;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketConfigSync implements IMessage {
+import java.util.function.Supplier;
+
+public class PacketConfigSync {
 
   protected @Nullable IValueFactory factory;
   protected @Nullable String modid, section;
@@ -19,40 +19,34 @@ public class PacketConfigSync implements IMessage {
     this.factory = null;
   }
 
-  PacketConfigSync(IValueFactory factory) {
-    this.factory = factory;
-  }
-
-  @SuppressWarnings("null")
-  @Override
-  public void toBytes(@Nullable ByteBuf buf) {
-    ByteBufUtils.writeUTF8String(buf, factory.getModid());
-    ByteBufUtils.writeUTF8String(buf, factory.getSection());
-    ByteBufAdapterRegistry.saveMapping(buf);
-    factory.save(buf);
-  }
-
-  @SuppressWarnings("null")
-  @Override
-  public void fromBytes(@Nullable ByteBuf buf) {
-    modid = ByteBufUtils.readUTF8String(buf);
-    section = ByteBufUtils.readUTF8String(buf);
+  public PacketConfigSync(@Nullable PacketBuffer buf) {
+    modid = buf.readString();
+    section = buf.readString();
     ByteBufAdapterRegistry.loadMapping(buf);
     bufferCopy = buf.copy();
   }
 
-  public static class Handler implements IMessageHandler<PacketConfigSync, IMessage> {
-    @SuppressWarnings("null")
-    @Override
-    public IMessage onMessage(@Nullable PacketConfigSync message, @Nullable MessageContext ctx) {
-      if (!Minecraft.getMinecraft().isIntegratedServerRunning()) {
-        FactoryManager.read(message.modid, message.section, message.bufferCopy);
-      }
-      if (message.bufferCopy != null) {
-        message.bufferCopy.release();
-      }
-      return null;
+  PacketConfigSync(IValueFactory factory) {
+    this.factory = factory;
+  }
+
+  public void toBytes(@Nullable PacketBuffer buf) {
+    buf.writeString(factory.getModid());
+    buf.writeString(factory.getSection());
+    ByteBufAdapterRegistry.saveMapping(buf);
+    factory.save(buf);
+  }
+
+
+  public boolean handle(Supplier<NetworkEvent.Context> contextSupplier) {
+    if (!Minecraft.getInstance().isIntegratedServerRunning()) {
+      FactoryManager.read(modid, section, bufferCopy);
     }
+    if (bufferCopy != null) {
+      bufferCopy.release();
+      return true;
+    }
+    return false;
   }
 
 }
