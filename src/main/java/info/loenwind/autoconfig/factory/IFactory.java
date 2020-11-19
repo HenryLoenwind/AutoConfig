@@ -1,5 +1,7 @@
 package info.loenwind.autoconfig.factory;
 
+import info.loenwind.autoconfig.util.Configuration;
+
 public interface IFactory {
 
   IValueFactory section(String section);

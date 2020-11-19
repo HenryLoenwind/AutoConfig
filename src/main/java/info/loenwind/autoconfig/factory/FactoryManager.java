@@ -7,6 +7,7 @@ import info.loenwind.autoconfig.util.Log;
 import info.loenwind.autoconfig.util.NullHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -49,14 +50,14 @@ public class FactoryManager {
   public static void onPlayerLoggon(final PlayerEvent.PlayerLoggedInEvent evt) {
     for (IValueFactory factory : factories.values()) {
       if (factory.needsSyncing()) {
-        Network.sendTo(new PacketConfigSync(factory), (PlayerEntity) NullHelper.notnullF(evt.getPlayer(), "PlayerLoggedInEvent without player"));
+        Network.sendTo(new PacketConfigSync(factory), (ServerPlayerEntity) NullHelper.notnullF(evt.getPlayer(), "PlayerLoggedInEvent without player"));
         Log.debug("Sent config to player " + evt.getPlayer().getDisplayName() + " for " + factory.getModid() + " (" + factory.getSection() + ")");
       }
     }
   }
 
   @SubscribeEvent
-  public static void onPlayerLogout(final ClientDisconnectionFromServerEvent event) {
+  public static void onPlayerLogout(final PlayerEvent.PlayerLoggedOutEvent event) {
     for (IValueFactory factory : factories.values()) {
       factory.endServerOverride();
       Log.debug("Removed server config override for " + factory.getModid() + " (" + factory.getSection() + ")");
