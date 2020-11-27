@@ -35,8 +35,13 @@ public class FactoryManager {
   }
 
   static void read(String mod, String section, final ByteBuf buf) {
-    Log.debug("Read " + factories.get(mod + "." + section).read(buf) + " config values from server packet for " + mod + " (" + section + ")");
-    overrides++;
+    final IValueFactory factory = factories.get(mod + "." + section);
+    if (factory != null) {
+      Log.debug("Read " + factory.read(buf) + " config values from server packet for " + mod + " (" + section + ")");
+      overrides++;
+    } else {
+      Log.warn("Ignoring configuration for unknown mod or section " + mod + " (" + section + ") sent by the server");
+    }
   }
 
   static void registerFactory(IValueFactory factory) {
