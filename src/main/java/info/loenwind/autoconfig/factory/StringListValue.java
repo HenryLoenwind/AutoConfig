@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.minecraftforge.common.config.Property;
+import info.loenwind.autoconfig.util.ConfigProperty;
 
 class StringListValue extends AbstractValue<List<String>> {
 
@@ -15,7 +15,7 @@ class StringListValue extends AbstractValue<List<String>> {
 
   @Override
   protected @Nullable List<String> makeValue() {
-    Property prop = owner.getConfig().get(section, keyname, defaultValue.toArray(new String[0]));
+    ConfigProperty prop = owner.getConfig().get(section, keyname, defaultValue.toArray(new String[0]));
     prop.setLanguageKey(keyname);
     prop.setValidationPattern(null);
     prop.setComment(getText() + " [default: " + defaultValue.toArray(new String[0]) + "]");

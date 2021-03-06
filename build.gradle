@@ -1,3 +1,6 @@
+import net.minecraftforge.gradle.common.task.SignJar
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
 buildscript {
     repositories {
         jcenter()
@@ -5,8 +8,8 @@ buildscript {
         maven { url = "http://files.minecraftforge.net/maven" }
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
-    dependencies { 
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT' 
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
 
@@ -14,7 +17,7 @@ plugins {
     id "com.matthewprenger.cursegradle" version "1.0.7"
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven-publish'
 
 ext.buildnumber = 0
@@ -41,9 +44,59 @@ if (project.hasProperty('mod_appendix')) {
 }
 
 minecraft {
-    mappings = "snapshot_20171212"
-    version = "${minecraft_version}-${forge_version}"
-    runDir = 'run'
+    mappings channel: 'snapshot', version: "20201028-1.16.3"
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
 }
 
 jar {
@@ -53,6 +106,7 @@ jar {
 }
 
 dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     testImplementation     "org.junit.jupiter:junit-jupiter-api:5.2.0"
     testRuntime         "org.junit.jupiter:junit-jupiter-engine:5.2.0"
 }
@@ -61,22 +115,6 @@ configurations {
     compile.extendsFrom exportedCompile
 }
 
-processResources {
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-
-    from(sourceSets.main.resources.srcDirs) {
-        include '**/*.info'
-        include '**/*.properties'
-
-        expand 'version': project.version, 'mcversion': project.minecraft.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude '**/*.info'
-        exclude '**/*.properties'
-    }
-}
 
 test {
     useJUnitPlatform()
@@ -102,7 +140,13 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
 }
 
-build.dependsOn sourceJar, javadoc
+
+task srcJar(type: Jar) {
+    from(sourceSets.main.output)
+    classifier = 'srcs'
+}
+
+build.dependsOn srcJar, javadoc
 
 publishing {
     tasks.publish.dependsOn 'build'
@@ -110,7 +154,7 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
 
-            artifact sourceJar
+            artifact srcJar
         }
     }
 
@@ -126,6 +170,15 @@ publishing {
                 }
             } else {
                 maven { url maven2_url }
+            }
+        }
+        if (project.hasProperty('use_hypherion') && project.use_hypherion) {
+            maven {
+                url hypherion_mavenURL
+                credentials {
+                    username System.getenv('MAVEN_USER')
+                    password System.getenv('MAVEN_PASS')
+                }
             }
         } else {
             mavenLocal()
@@ -174,7 +227,7 @@ task mkKeyStore(type:Exec) {
    commandLine 'keytool', '-genkey', '-alias', 'signFiles', '-keystore', 'autosavestore.jks', '-storepass', '123456', '-noprompt', '-dname', 'CN='+getCN(), '-keypass', '123456'
 }
 
-task signJar(type: SignJar, dependsOn: reobfJar) {
+task signJar(type: SignJar, dependsOn: jar) {
     inputFile = jar.archivePath
     outputFile = jar.archivePath
     keyStore = 'autosavestore.jks'

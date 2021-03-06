@@ -1,6 +1,7 @@
 package info.loenwind.autoconfig.factory;
 
-import net.minecraftforge.common.config.Configuration;
+
+import info.loenwind.autoconfig.util.Configuration;
 
 public interface IRootFactory extends IFactory {
 

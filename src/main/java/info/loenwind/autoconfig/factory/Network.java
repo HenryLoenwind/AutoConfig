@@ -1,21 +1,34 @@
 package info.loenwind.autoconfig.factory;
 
-import info.loenwind.autoconfig.factory.PacketConfigSync.Handler;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 class Network {
 
-  private static final SimpleNetworkWrapper INSTANCE = new SimpleNetworkWrapper("autoconfig");
+  private static final String PROTOCOL_VERSION = "1";
+  private static int ID = 0;
+  private static SimpleChannel INSTANCE;
 
-  public static void sendTo(IMessage message, EntityPlayerMP player) {
-    INSTANCE.sendTo(message, player);
+  public static void sendTo(Object packet, ServerPlayerEntity player) {
+    INSTANCE.sendTo(packet, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
   }
 
   public static void create() {
-    INSTANCE.registerMessage(Handler.class, PacketConfigSync.class, 0, Side.CLIENT);
+    INSTANCE = NetworkRegistry.newSimpleChannel(
+            new ResourceLocation("autoconfig", "confighandler"),
+            () -> PROTOCOL_VERSION,
+            PROTOCOL_VERSION::equals,
+            PROTOCOL_VERSION::equals
+    );
+
+    INSTANCE.messageBuilder(PacketConfigSync.class, ID++)
+            .encoder(PacketConfigSync::toBytes)
+            .decoder(PacketConfigSync::new)
+            .consumer(PacketConfigSync::handle)
+            .add();
   }
 
 }

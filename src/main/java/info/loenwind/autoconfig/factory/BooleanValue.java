@@ -3,8 +3,7 @@ package info.loenwind.autoconfig.factory;
 import java.util.Random;
 
 import javax.annotation.Nullable;
-
-import net.minecraftforge.common.config.Property;
+import info.loenwind.autoconfig.util.ConfigProperty;
 
 class BooleanValue extends AbstractValue<Boolean> {
 
@@ -14,7 +13,7 @@ class BooleanValue extends AbstractValue<Boolean> {
 
   @Override
   protected @Nullable Boolean makeValue() {
-    Property prop = owner.getConfig().get(section, keyname, defaultValue);
+    ConfigProperty prop = owner.getConfig().get(section, keyname, defaultValue);
     prop.setLanguageKey(keyname);
     prop.setComment(getText() + " [default: " + defaultValue + "]");
     prop.setRequiresMcRestart(isStartup);

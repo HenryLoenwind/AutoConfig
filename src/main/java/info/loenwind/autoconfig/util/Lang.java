@@ -1,9 +1,8 @@
 package info.loenwind.autoconfig.util;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public enum Lang {
   NETWORK_BAD_CONFIG("autoconfig.network.bad_config",
@@ -24,17 +23,17 @@ public enum Lang {
   }
 
   public String get() {
-    return I18n.canTranslate(key) ? I18n.translateToLocal(key) : fallback;
+    return I18n.hasKey(key) ? I18n.format(key) : fallback;
   }
 
   @SuppressWarnings("null")
   public String get(Object... params) {
-    return I18n.canTranslate(key) ? I18n.translateToLocalFormatted(key, params) : String.format(fallback, params);
+    return I18n.hasKey(key) ? I18n.format(key, params) : String.format(fallback, params);
   }
 
   @SuppressWarnings("null")
   public ITextComponent toChat(Object... params) {
-    return I18n.canTranslate(key) ? new TextComponentTranslation(key, params) : new TextComponentString(String.format(fallback, params));
+    return I18n.hasKey(key) ? new TranslationTextComponent(key, params) : new TranslationTextComponent(String.format(fallback, params));
   }
 
 }

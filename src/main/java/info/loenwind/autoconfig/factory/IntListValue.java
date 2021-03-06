@@ -2,8 +2,8 @@ package info.loenwind.autoconfig.factory;
 
 import javax.annotation.Nullable;
 
+import info.loenwind.autoconfig.util.ConfigProperty;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.common.config.Property;
 
 class IntListValue extends AbstractValue<int[]> {
 
@@ -14,7 +14,7 @@ class IntListValue extends AbstractValue<int[]> {
   @Override
   protected @Nullable int[] makeValue() {
     int min = minValue != null ? minValue.intValue() : Integer.MIN_VALUE, max = maxValue != null ? maxValue.intValue() : Integer.MAX_VALUE;
-    Property prop = owner.getConfig().get(section, keyname, defaultValue);
+    ConfigProperty prop = owner.getConfig().get(section, keyname, defaultValue);
     prop.setLanguageKey(keyname);
     prop.setComment(getText() + " [range: " + min + " ~ " + max + ", default: " + defaultValue + "]");
     prop.setMinValue(min);

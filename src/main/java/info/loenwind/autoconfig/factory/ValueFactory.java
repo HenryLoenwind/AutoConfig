@@ -6,8 +6,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import info.loenwind.autoconfig.util.Configuration;
 import info.loenwind.autoconfig.util.NullHelper;
-import net.minecraftforge.common.config.Configuration;
 
 public class ValueFactory implements IRootFactory {
 

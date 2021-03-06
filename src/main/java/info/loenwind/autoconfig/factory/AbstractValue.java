@@ -10,8 +10,8 @@ import info.loenwind.autoconfig.util.Log;
 import info.loenwind.autoconfig.util.NullHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public abstract class AbstractValue<T> implements IValue<T> {
 
@@ -95,7 +95,7 @@ public abstract class AbstractValue<T> implements IValue<T> {
     return sync();
   }
 
-  @SideOnly(Side.CLIENT)
+  @OnlyIn(Dist.CLIENT)
   public void onServerSync(Map<String, Object> serverConfig) {
     if (isStartup && serverConfig.containsKey(keyname)) {
       @SuppressWarnings("unchecked")
@@ -103,7 +103,7 @@ public abstract class AbstractValue<T> implements IValue<T> {
       T clientValue = get();
       if (!clientValue.equals(serverValue)) {
         Log.error(Lang.NETWORK_BAD_CONFIG.get(section, keyname, serverValue));
-        Minecraft.getMinecraft().player.connection.getNetworkManager().closeChannel(Lang.NETWORK_BAD_CONFIG.toChat(section, keyname, serverValue));
+        Minecraft.getInstance().player.connection.getNetworkManager().closeChannel(Lang.NETWORK_BAD_CONFIG.toChat(section, keyname, serverValue));
       }
     }
   }

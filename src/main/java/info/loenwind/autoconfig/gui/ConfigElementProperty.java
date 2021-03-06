@@ -8,16 +8,9 @@ import javax.annotation.Nullable;
 import info.loenwind.autoconfig.factory.FactoryManager;
 import info.loenwind.autoconfig.util.Lang;
 import info.loenwind.autoconfig.util.NullHelper;
-import net.minecraftforge.common.config.ConfigElement;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.client.config.ConfigGuiType;
-import net.minecraftforge.fml.client.config.GuiConfigEntries.IConfigEntry;
-import net.minecraftforge.fml.client.config.GuiEditArrayEntries.IArrayEntry;
-import net.minecraftforge.fml.client.config.IConfigElement;
 
-/**
- ** Forge's {@link ConfigElement} is written in a way to prevent sub-classing, so we had to copy it.
- **/
+//TODO Config GUI
+/*
 public class ConfigElementProperty implements IConfigElement {
   private Property prop;
 
@@ -270,4 +263,4 @@ public class ConfigElementProperty implements IConfigElement {
     return prop.getMaxValue();
   }
 
-}
+}*/

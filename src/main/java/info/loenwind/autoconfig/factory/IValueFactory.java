@@ -6,7 +6,8 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.fluids.Fluid;
+import net.minecraft.fluid.Fluid;
+
 
 public interface IValueFactory extends IFactory {
 

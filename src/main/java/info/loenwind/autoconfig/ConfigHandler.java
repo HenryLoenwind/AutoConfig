@@ -6,13 +6,14 @@ import javax.annotation.Nullable;
 
 import info.loenwind.autoconfig.factory.ByteBufAdapters;
 import info.loenwind.autoconfig.factory.IRootFactory;
+import info.loenwind.autoconfig.util.Configuration;
 import info.loenwind.autoconfig.util.Log;
 import info.loenwind.autoconfig.util.NullHelper;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 public class ConfigHandler {
 
@@ -21,18 +22,18 @@ public class ConfigHandler {
 
   protected final IRootFactory factory;
 
-  public ConfigHandler(FMLPreInitializationEvent event, IRootFactory factory) {
+  public ConfigHandler(FMLCommonSetupEvent event, IRootFactory factory) {
     this(event, factory, null);
   }
 
-  public ConfigHandler(FMLPreInitializationEvent event, IRootFactory factory, @Nullable String folder) {
+  public ConfigHandler(FMLCommonSetupEvent event, IRootFactory factory, @Nullable String folder) {
     this.factory = factory;
     ByteBufAdapters.NONE.getClass(); // trigger system init
     MinecraftForge.EVENT_BUS.register(this);
     if (folder != null) {
-      configDirectory = new File(event.getModConfigurationDirectory(), folder);
+      configDirectory = new File(FMLPaths.CONFIGDIR.get().toFile(), folder);
     } else {
-      configDirectory = NullHelper.notnullF(event.getModConfigurationDirectory(), "FMLPreInitializationEvent has no config folder");
+      configDirectory = NullHelper.notnullF(FMLPaths.CONFIGDIR.get().toFile(), "FMLCommonSetupEvent has no config folder");
     }
     if (!configDirectory.exists()) {
       configDirectory.mkdir();
@@ -57,8 +58,8 @@ public class ConfigHandler {
   }
 
   @SubscribeEvent
-  public void onConfigChanged(OnConfigChangedEvent event) {
-    if (event.getModID().equals(factory.getModid())) {
+  public void onConfigChanged(ModConfig.ModConfigEvent event) {
+    if (event.getConfig().getModId().equals(factory.getModid())) {
       Log.info("Updating config...");
       syncConfig();
     }
